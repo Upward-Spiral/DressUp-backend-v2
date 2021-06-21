@@ -4,6 +4,7 @@
 import express, { Request, Response } from 'express'
 import * as ItemService from './items.service'
 import { BaseItem, Item } from './item.interface'
+import { checkJwt } from '../middleware/authz.middleware'
 /**
  * Router Definition
  */
@@ -39,6 +40,8 @@ itemsRouter.get('/:id', async (req: Request, res: Response) => {
     res.status(500).send(e.message)
   }
 })
+
+itemsRouter.use(checkJwt)
 
 // POST items
 
