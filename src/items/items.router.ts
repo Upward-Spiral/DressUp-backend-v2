@@ -4,7 +4,8 @@
 import express, { Request, Response } from 'express'
 import * as ItemService from './items.service'
 import { BaseItem, Item } from './item.interface'
-import { checkJwt } from '../middleware/authz.middleware'
+import { checkJwt, checkScopes } from '../middleware/authz.middleware'
+
 /**
  * Router Definition
  */
@@ -41,7 +42,8 @@ itemsRouter.get('/:id', async (req: Request, res: Response) => {
   }
 })
 
-itemsRouter.use(checkJwt)
+itemsRouter.use(checkJwt, checkScopes)
+
 
 // POST items
 
