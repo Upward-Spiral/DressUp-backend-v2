@@ -1,6 +1,6 @@
 import express from 'express'
 import mongoose from 'mongoose'
-import { port, dbURI } from './config/environment'
+import { port, dbURI, secret } from './config/environment'
 import dotenv from 'dotenv'
 dotenv.config()
 const { auth } = require('express-openid-connect')
@@ -10,7 +10,7 @@ const app = express()
 const config = {
   authRequired: false,
   auth0Logout: true,
-  secret: 'a long, randomly-generated string stored in env',
+  secret: secret,
   baseURL: 'https://localhost:3000',
   clientID: 'LwYZNrkiCHK0rpnbDdvFWcepAdNFYqvh',
   issuerBaseURL: 'https://dev-puad4y88.eu.auth0.com'
