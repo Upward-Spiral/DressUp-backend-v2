@@ -15,9 +15,9 @@ app.get('/', (_req, res) => {
   res.send('<a href="/home">Home</a>')
 })
 
-app.get('/profile', requiresAuth(), (req, res) =>
-  res.send(`Hello ${req.oidc.user.sub}, welcome back.`)
-)
+app.get('/profile', requiresAuth(), (req, res) => {
+  res.send(JSON.stringify(req.oidc.user))
+})
 
 
 export default router
