@@ -41,7 +41,7 @@ const startServer = async () => {
       console.log(`:rotating_light: Incoming request: ${req.method} - ${req.url}`)
       res.header('Access-Control-Allow-Origin', '*')
       // res.locals.user = req.oidc.user
-      // res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,PATCH')
+      res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,PATCH')
       // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
       next()
     })
@@ -52,7 +52,7 @@ const startServer = async () => {
     })
 
     //! Run the router
-    app.use('/', router)
+    app.use('/api', router)
 
     //! Server
     app.listen(process.env.PORT || port, () => console.log(`:rocket: Express is up and running on port ${port}`))

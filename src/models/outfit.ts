@@ -17,7 +17,7 @@ export interface IOutfit extends Document {
 const OutfitSchema: Schema = new Schema({
   title: { type: String, required: true },
   image: { type: String },
-  occasion: { type: String, enum: ['Party', 'Work', 'Dinner', 'Funeral', 'Date', 'Workout',]},
+  occasion: { type: String, enum: ['Party', 'Work', 'Dinner', 'Funeral', 'Date', 'Workout']},
   description: {type: String},
   shared: {type: Boolean},
   items: { type: Schema.Types.ObjectId, ref: 'Item'},
