@@ -34,10 +34,37 @@ app.get('item/detail/:id', requiresAuth(), (req, res) => {
   return res.status(200).json(oneItem)
 })
 
+app.post('item/create', requiresAuth(), (req, res) => {
+  const userId = req.oidc.user
+  Item.create({
+    title: req.body.title,
+    image: req.file.filename,
+    material: req.body.material,
+    brand: req.body.brand,
+    owner: userId
+  })
+  res.redirect('/item/list' )
+})
+
 app.get('/outfit/list', requiresAuth(), (_req, res) => {
   const eachOutfit = Outfit.find()
   return res.status(200).json(eachOutfit)
 })
+
+app.post('outfit/create', requiresAuth(), (req, res) => {
+  const userId = req.oidc.user
+  Outfit.create({
+    title: req.body.title,
+    image: req.body.image,
+    occasion: req.body.occasion,
+    description: req.body.description,
+    image: req.file.filename,
+    owner: userId,
+    shared: false
+  })
+  res.redirect('/outfit/list' )
+})
+
 
 app.get('outfit/detail/:id', requiresAuth(), (req, res) => {
   const { id } = req.params

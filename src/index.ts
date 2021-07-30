@@ -1,12 +1,11 @@
 import express from 'express'
 import mongoose from 'mongoose'
-const { auth } = require('express-openid-connect')
 import { port, dbURI } from './config/environment'
 import router from './config/router'
 import dotenv from 'dotenv'
 dotenv.config()
 
-
+const { auth } = require('express-openid-connect')
 const app = express()
 const config = {
   authRequired: false,
