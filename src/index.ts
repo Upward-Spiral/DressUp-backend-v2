@@ -1,56 +1,66 @@
-/**
- * Required External Modules
- */
-import * as dotenv from 'dotenv'
 import express from 'express'
-import cors from 'cors'
-import helmet from 'helmet'
 import mongoose from 'mongoose'
-import { itemsRouter } from './items/items.router'
-import { errorHandler } from './middleware/error.middleware'
-import { notFoundHandler } from './middleware/not-found.middleware'
+import { port, dbURI } from './config/environment'
+import router from './config/router'
+import dotenv from 'dotenv'
+dotenv.config()
 
- 
- dotenv.config()
-/**
- * App Variables
- */
-if (!process.env.PORT) {
-  process.exit(1)
+const { auth } = require('express-openid-connect')
+const app = express()
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: '0639ae9f3cf5f388ac4db9ca35f9e0bdb022c37ecbe01f1ee39d528ce66cc277',
+  baseURL: 'https://localhost:3000',
+  clientID: 'LwYZNrkiCHK0rpnbDdvFWcepAdNFYqvh',
+  issuerBaseURL: 'https://dev-puad4y88.eu.auth0.com'
 }
 
-const PORT: number = parseInt(process.env.PORT as string, 10)
-const dbURI: string = (process.env.dbURI as string)
+
+const startServer = async () => {
+
+  try {
+
+    //! Connect to mongo
+    await mongoose.connect(dbURI, { useNewUrlParser: true, useCreateIndex: true, useUnifiedTopology: true })
+    console.log(':rocket: Database has connected successfully')
+
+    mongoose.connection.on('connected', () => {
+      console.log('Mongoose is connected')
+    })
+
+    //! Body parser
+    app.use(express.json())
 
 
-const app = express()
-/**
- *  App Configuration
- */
-app.use(helmet())
-app.use(cors())
-app.use(express.json())
-app.use('/api/user/items', itemsRouter)
-app.use(errorHandler)
-app.use(notFoundHandler)
+    app.use(auth(config))
 
+    //! Middleware
+    app.use((req, res, next) => {
+      console.log(`:rotating_light: Incoming request: ${req.method} - ${req.url}`)
+      res.header('Access-Control-Allow-Origin', '*')
+      // res.locals.user = req.oidc.user
+      res.header('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,PATCH')
+      // res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+      next()
+    })
 
-/**
- * Connect to MongoDB Database
- */
-mongoose.connect(dbURI, {
-  useCreateIndex: true,
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}, () => {
-  console.log('Connect to MongoDB')
-})
+    app.get('/', (req, res) => {
+      res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out')
+      console.log('logged in')
+    })
 
+    //! Run the router
+    app.use('/api', router)
 
-/**
- * Server Activation
- */
+    //! Server
+    app.listen(process.env.PORT || port, () => console.log(`:rocket: Express is up and running on port ${port}`))
+  
+  } catch (err) {
+    console.log(':rotating_light: Something went wrong starting the app')
+    console.log(err)
+  }
 
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`)
-})
+}
+startServer()
+
